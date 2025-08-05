@@ -18,7 +18,15 @@ menu = st.sidebar.radio("Go to:",[
     "Statistics",
     "Export",
     "Import",
+    "Clear Workout Plan",
     ])
+
+def mostrar_exercicios():
+    if st.session_state.exercicios:
+        df = pd.DataFrame(st.session_state.exercicios)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("You haven't added any exercises.")
 
 def adicionar_exercicio(nome, sets, reps, rest, weight):
     st.session_state.exercicios.append({
@@ -31,19 +39,11 @@ def adicionar_exercicio(nome, sets, reps, rest, weight):
 
 if menu == "View workout plan":
     st.subheader("Current training program")
-    if st.session_state.exercicios:
-        df = pd.DataFrame(st.session_state.exercicios)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("You haven't added any exercises.")
+    mostrar_exercicios()
 
 elif menu == "Add Exercise":
     st.subheader("Current training program")
-    if st.session_state.exercicios:
-        df = pd.DataFrame(st.session_state.exercicios)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("You haven't added any exercises.")
+    mostrar_exercicios()
 
     with st.form("formulario_exercicio"):
         st.subheader("Add exercise")
@@ -58,6 +58,7 @@ elif menu == "Add Exercise":
             if nome.strip():
                 adicionar_exercicio(nome.strip(), sets, reps, rest, weight)
                 st.success(f"Exercise '{nome}' added successfully.")
+                st.rerun()
             else:
                 st.warning("Please, enter a valid exercise name.")
 
@@ -67,7 +68,16 @@ elif menu == "Edit Exercise":
 
 elif menu == "Remove Exercise":
     st.subheader("Remove an Exercise")
-    st.info("Feature under development.")
+    mostrar_exercicios()
+
+    nomes_exercicios = [f"{i+1}. {ex['Exercise']}" for i, ex in enumerate(st.session_state.exercicios)]
+    escolha = st.selectbox("Select Exercise to remove", nomes_exercicios)
+
+    if st.button("Remove Exercise"):
+        index = nomes_exercicios.index(escolha)
+        nome_removido = st.session_state.exercicios.pop(index)["Exercise"]
+        st.success(f"Exercise '{nome_removido}' removed successfully.")
+        st.rerun()
 
 elif menu == "Statistics":
     st.subheader("Workout Statistics")
@@ -80,3 +90,8 @@ elif menu == "Export":
 elif menu == "Import":
     st.subheader("Import Workout Plan")
     st.info("Feature under development.")
+
+elif menu == "Clear Workout Plan":
+    st.subheader("Clear Workout Plan")
+    if st.button("Clear Workout Plan"):
+        st.session_state.exercicios.clear()
