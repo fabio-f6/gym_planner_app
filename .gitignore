@@ -176,6 +176,6 @@ poetry.toml
 pyrightconfig.json
 
 # Credentials
-.gymme-gains-c8a467f8722b.json
+gymme-gains-c8a467f8722b.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
