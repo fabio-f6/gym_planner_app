@@ -5,6 +5,9 @@ from sheets_utils import adicionar_treino
 st.set_page_config(page_title="Gym Planner", layout="centered")
 
 nome_usuario = st.text_input("Type a username:", key="usuario")
+if nome_usuario:
+    st.session_state.nome_usuario = nome_usuario
+
 if not nome_usuario:
     st.warning("⚠️ Por favor, insira seu nome para começar.")
     st.stop()
