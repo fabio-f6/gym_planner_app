@@ -1,18 +1,22 @@
 import gspread
+import json
 from google.oauth2.service_account import Credentials
 import streamlit as st
 
-SCOPES = [
+SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
 @st.cache_resource
 def connect_to_gsheet():
-    credentials = Credentials.from_service_account_file(
-        'credentials.json',  # Ou use st.secrets se for deploy no Streamlit Cloud
-        scopes=SCOPES
-    )
+    try:
+        service_account_info = st.secrets["gcp_service_account"]
+        credentials = Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+    except:
+        with open("credentials.json") as source:
+            service_account_info = json.load(source)
+        credentials = Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
     client = gspread.authorize(credentials)
     sheet = client.open("GymPlannerData").sheet1
     return sheet
