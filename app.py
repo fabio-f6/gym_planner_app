@@ -1,7 +1,13 @@
 import streamlit as st
 import pandas as pd
+from sheets_utils import adicionar_treino
 
 st.set_page_config(page_title="Gym Planner", layout="centered")
+
+nome_usuario = st.text_input("Type a username:", key="usuario")
+if not nome_usuario:
+    st.warning("⚠️ Por favor, insira seu nome para começar.")
+    st.stop()
 
 if "exercicios" not in st.session_state:
     st.session_state["exercicios"] = []
@@ -32,13 +38,17 @@ def mostrar_exercicios():
         return False
 
 def adicionar_exercicio(nome, sets, reps, rest, weight):
-    st.session_state.exercicios.append({
+    novo_exercicio = {
         "Exercise": nome,
         "Sets": sets,
         "Reps": reps,
         "Rest": rest,
         "Weight": weight
-    })
+    }
+    st.session_state.exercicios.append(novo_exercicio)
+
+    if "nome_usuario" in st.session_state and st.session_state.nome_usuario.strip():
+        adicionar_treino(st.session_state.nome_usuario, [novo_exercicio])
 
 if menu == "View workout plan":
     mostrar_exercicios()
