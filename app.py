@@ -22,11 +22,14 @@ menu = st.sidebar.radio("Go to:",[
     ])
 
 def mostrar_exercicios():
+    st.subheader("Current training program")
     if st.session_state.exercicios:
         df = pd.DataFrame(st.session_state.exercicios)
         st.dataframe(df, use_container_width=True)
+        return True
     else:
         st.info("You haven't added any exercises.")
+        return False
 
 def adicionar_exercicio(nome, sets, reps, rest, weight):
     st.session_state.exercicios.append({
@@ -38,11 +41,9 @@ def adicionar_exercicio(nome, sets, reps, rest, weight):
     })
 
 if menu == "View workout plan":
-    st.subheader("Current training program")
     mostrar_exercicios()
 
 elif menu == "Add Exercise":
-    st.subheader("Current training program")
     mostrar_exercicios()
 
     with st.form("formulario_exercicio"):
@@ -67,17 +68,26 @@ elif menu == "Edit Exercise":
     st.info("Feature under development.")
 
 elif menu == "Remove Exercise":
-    st.subheader("Remove an Exercise")
-    mostrar_exercicios()
+    if mostrar_exercicios():
 
-    nomes_exercicios = [f"{i+1}. {ex['Exercise']}" for i, ex in enumerate(st.session_state.exercicios)]
-    escolha = st.selectbox("Select Exercise to remove", nomes_exercicios)
+        indices_para_remover = []
 
-    if st.button("Remove Exercise"):
-        index = nomes_exercicios.index(escolha)
-        nome_removido = st.session_state.exercicios.pop(index)["Exercise"]
-        st.success(f"Exercise '{nome_removido}' removed successfully.")
-        st.rerun()
+        st.subheader("Select one or more exercises to remove:")
+        for i, ex in enumerate(st.session_state.exercicios):
+            label = f"{ex['Exercise']} (Sets: {ex['Sets']}), (Reps: {ex['Reps']}), (Rest: {ex['Rest']}), (Weight: {ex['Weight']})."
+            if st.checkbox(label, key=f"remove_{i}"):
+                indices_para_remover.append(i)
+
+        if indices_para_remover:
+            confirm = st.checkbox("Remove selected exercise(s)?")
+            if confirm:
+                if st.button("Remove selected exercises"):
+                    for i in sorted(indices_para_remover, reverse=True):
+                        st.session_state.exercicios.pop(i)
+                    st.success(f"{len(indices_para_remover)} exercise(s) removed successfully.")
+                    st.rerun()
+        else:
+            st.info("No exercises selected.")
 
 elif menu == "Statistics":
     st.subheader("Workout Statistics")
