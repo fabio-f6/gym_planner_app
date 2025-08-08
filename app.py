@@ -9,7 +9,7 @@ if nome_usuario:
     st.session_state.nome_usuario = nome_usuario
 
 if not nome_usuario:
-    st.warning("⚠️ Por favor, insira seu nome para começar.")
+    st.warning("Por favor, insira seu nome para começar.")
     st.stop()
 
 if "exercicios" not in st.session_state:
